@@ -163,7 +163,6 @@ setlocal buftype=nofile
 setlocal bufhidden=wipe
 setlocal noswapfile
 setlocal nomodifiable
-setlocal readonly
 ```
 
 The preview buffer is generated output and should not be editable.
@@ -174,20 +173,12 @@ The preview buffer is generated output and should not be editable.
 
 Automatic refresh is based on cursor location.
 
-The plugin intentionally does not track changes, modified ranges, hashes, or changedtick values.
-
 A save only triggers a refresh when the cursor is currently within the area represented by the preview.
 
 ---
 
 ### Selection Mode
 
-Selection mode is active when:
-
-```vim
-exists(b:d2_start)
-exists(b:d2_end)
-```
 
 On save:
 
@@ -255,50 +246,7 @@ Ignore save
 
 ## Hidden Preview Handling
 
-When a refresh would occur but the preview buffer is not visible:
-
-```vim
-b:d2_preview_dirty = 1
-```
-
-No rendering is performed while hidden.
-
----
-
-## Refreshing Hidden Previews
-
-When entering the preview buffer:
-
-```text
-BufEnter preview-buffer
-```
-
-If:
-
-```text
-dirty == 1
-```
-
-then:
-
-```text
-Render
-Clear dirty flag
-```
-
-This covers:
-
-```vim
-:buffer
-:b
-:sbuffer
-buffer pickers
-manual navigation
-```
-
-No window tracking is required.
-
----
+no need. bufwipeout, ensures no hidden preview buffer
 
 ## Rendering
 
@@ -330,6 +278,8 @@ Example:
 (previous preview remains visible)
 ```
 
+This feature is commented out. As i realized it's distarcting. let's not do status update for now. just update fully when done.
+
 ---
 
 ## Render Completion
@@ -337,13 +287,6 @@ Example:
 ### Success
 
 1. Replace preview contents with new output.
-2. Remove status line.
-3. Set:
-
-```vim
-b:d2_preview_dirty = 0
-```
-
 ---
 
 ### Failure
