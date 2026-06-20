@@ -26,7 +26,63 @@ function! s:current_d2_block() abort
   \ 'line_end': l:end - 1,
   \ }
 endfunction
-" temporay function for test. to be delted in final.
-function Temp_current_d2_block() abort
-	return s:current_d2_block()
+
+function! s:get_current_block_text() abort
+  let l:block = s:current_d2_block()
+
+  if l:block is v:null
+    return ''
+  endif
+
+  return join(
+  \ getline(l:block.line_start, l:block.line_end),
+  \ "\n")
+endfunction
+
+function! s:on_d2_stdout(jobid, data, event) dict abort
+  let self.output = a:data
+endfunction
+
+function! s:on_d2_exit(jobid, code, event) dict abort
+  if a:code != 0
+    return
+  endif
+
+  call append(line('$'), self.output)
+endfunction
+
+function! s:run_d2_on(text) abort
+  let l:job = jobstart(
+  \ ['d2', '--stdout-format', 'txt', '-'],
+  \ {
+  \ 'stdin': 'pipe',
+  \ 'stdout_buffered': v:true,
+  \ 'output': [],
+  \ 'on_stdout': function('s:on_d2_stdout'),
+  \ 'on_exit': function('s:on_d2_exit'),
+  \ })
+
+  call chansend(l:job, a:text)
+  call chanclose(l:job, 'stdin')
+endfunction
+
+function! s:run_d2_on_current_block() abort
+  call s:run_d2_on(s:get_current_block_text())
+endfunction
+
+" temporary functions for test. to be deleted in final.
+function! Temp_current_d2_block() abort
+  return s:current_d2_block()
+endfunction
+
+function! Temp_get_current_block_text() abort
+  return s:get_current_block_text()
+endfunction
+
+function! Temp_run_d2_on(text) abort
+  call s:run_d2_on(a:text)
+endfunction
+
+function! Temp_run_d2_on_current_block() abort
+  call s:run_d2_on_current_block()
 endfunction
