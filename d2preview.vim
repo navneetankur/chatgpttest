@@ -210,31 +210,3 @@ function! s:d2_preview(mode = v:null) range abort
 endfunction
 
 command! -range D2Preview <line1>,<line2>call s:d2_preview()
-
-function! Temp_current_d2_block() abort
-  return s:current_d2_block()
-endfunction
-
-function! Temp_all_d2_blocks() abort
-  return s:all_d2_blocks()
-endfunction
-
-function! Temp_all_d2_blocks_text() abort
-  return s:all_d2_blocks_text()
-endfunction
-
-function! Temp_cursor_inside_d2p() abort
-  return s:cursor_inside_d2p()
-endfunction
-
-function! Temp_get_current_block_text() abort
-  return s:get_current_block_text()
-endfunction
-
-function! Temp_run_d2_on(text, preview_bufname) abort
-  call s:run_d2_on(a:text, a:preview_bufname)
-endfunction
-
-function! Temp_d2_preview(mode) abort range
-  execute a:firstline..","..a:lastline.."call s:d2_preview('"..a:mode.."')"
-endfunction
