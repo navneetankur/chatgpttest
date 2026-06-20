@@ -33,16 +33,18 @@ function! s:current_d2_block() abort
 endfunction
 
 function! s:all_d2_blocks() abort
+  let l:save = getpos('.')
   let l:blocks = []
-  let l:lnum = 1
 
-  while l:lnum <= line('$')
-    let l:start = search('^```d2\s*$', 'nW', l:lnum)
+  call cursor(1, 1)
+
+  while 1
+    let l:start = search('^```d2\s*$', 'W')
     if l:start == 0
       break
     endif
 
-    let l:end = search('^```\s*$', 'nW', l:start + 1)
+    let l:end = search('^```\s*$', 'W')
     if l:end == 0
       break
     endif
@@ -51,9 +53,9 @@ function! s:all_d2_blocks() abort
     \ 'line_start': l:start + 1,
     \ 'line_end': l:end - 1,
     \ })
-
-    let l:lnum = l:end + 1
   endwhile
+
+  call setpos('.', l:save)
 
   return l:blocks
 endfunction
