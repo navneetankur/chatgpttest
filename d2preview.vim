@@ -48,16 +48,18 @@ function! s:on_d2_exit(jobid, code, event) dict abort
     return
   endif
 
-  call append(line('$'), self.output)
+  call deletebufline(self.preview_bufnr, 1, '$')
+  call setbufline(self.preview_bufnr, 1, self.output)
 endfunction
 
-function! s:run_d2_on(text) abort
+function! s:run_d2_on(text, preview_bufnr) abort
   let l:job = jobstart(
   \ ['d2', '--stdout-format', 'txt', '-'],
   \ {
   \ 'stdin': 'pipe',
   \ 'stdout_buffered': v:true,
   \ 'output': [],
+  \ 'preview_bufnr': a:preview_bufnr,
   \ 'on_stdout': function('s:on_d2_stdout'),
   \ 'on_exit': function('s:on_d2_exit'),
   \ })
@@ -66,8 +68,26 @@ function! s:run_d2_on(text) abort
   call chanclose(l:job, 'stdin')
 endfunction
 
-function! s:run_d2_on_current_block() abort
-  call s:run_d2_on(s:get_current_block_text())
+function! s:d2_preview() abort
+  if !exists('b:d2p')
+    let b:d2p = {}
+  endif
+
+  if !has_key(b:d2p, 'preview_bufnr') || !bufexists(b:d2p.preview_bufnr)
+    let l:source = bufname('%')
+
+    vsplit
+    execute 'enew'
+    execute 'file ' . fnameescape(l:source . '.' . rand() . '.d2p')
+
+    let b:d2p.preview_bufnr = bufnr('%')
+
+    wincmd p
+  endif
+
+  call s:run_d2_on(
+  \ s:get_current_block_text(),
+  \ b:d2p.preview_bufnr)
 endfunction
 
 " temporary functions for test. to be deleted in final.
@@ -79,10 +99,10 @@ function! Temp_get_current_block_text() abort
   return s:get_current_block_text()
 endfunction
 
-function! Temp_run_d2_on(text) abort
-  call s:run_d2_on(a:text)
+function! Temp_run_d2_on(text, preview_bufnr) abort
+  call s:run_d2_on(a:text, a:preview_bufnr)
 endfunction
 
-function! Temp_run_d2_on_current_block() abort
-  call s:run_d2_on_current_block()
+function! Temp_d2_preview() abort
+  call s:d2_preview()
 endfunction
