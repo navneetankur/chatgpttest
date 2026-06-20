@@ -1,7 +1,8 @@
 if exists('g:loaded_d2preview')
   finish
 endif
-let g:loaded_d2preview = 1
+" add it back after we done.
+" let g:loaded_d2preview = 1
 
 function! s:current_d2_block() abort
   let l:save = getpos('.')
@@ -24,4 +25,8 @@ function! s:current_d2_block() abort
   \ 'line_start': l:start + 1,
   \ 'line_end': l:end - 1,
   \ }
+endfunction
+" temporay function for test. to be delted in final.
+function Temp_current_d2_block() abort
+	return s:current_d2_block()
 endfunction
