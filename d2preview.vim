@@ -74,14 +74,15 @@ function! s:d2_preview() abort
   endif
 
   if !has_key(b:d2p, 'preview_bufnr') || !bufexists(b:d2p.preview_bufnr)
-    let l:source = bufname('%')
+    let l:name = bufname('%') . '.' . rand() . '.d2p'
+
+    let l:preview_bufnr = bufadd(l:name)
+    call bufload(l:preview_bufnr)
+
+    let b:d2p.preview_bufnr = l:preview_bufnr
 
     vsplit
-    execute 'enew'
-    execute 'file ' . fnameescape(l:source . '.' . rand() . '.d2p')
-
-    let b:d2p.preview_bufnr = bufnr('%')
-
+    execute 'buffer ' . l:preview_bufnr
     wincmd p
   endif
 
