@@ -94,7 +94,7 @@ function! s:run_d2_on(text, preview_bufname) abort
 endfunction
 
 function! s:on_save() abort
-  if exists('b:d2p') && has_key(b:d2p, 'preview_bufname') && s:cursor_inside_d2p()
+  if exists('b:d2p') && has_key(b:d2p, 'preview_bufname') && bufexists(b:d2p.preview_bufname) && s:cursor_inside_d2p()
     call s:run_d2_on(s:get_current_block_text(), b:d2p.preview_bufname)
   endif
 endfunction
@@ -104,7 +104,7 @@ function! s:d2_preview() abort
     let b:d2p = {}
   endif
 
-  if !has_key(b:d2p, 'preview_bufname') || bufnr(b:d2p.preview_bufname) == -1
+  if !has_key(b:d2p, 'preview_bufname') || !bufexists(b:d2p.preview_bufname)
     let l:name = bufname('%') . '.' . rand() . '.d2p'
     let l:preview_bufnr = bufadd(l:name)
     call bufload(l:preview_bufnr)
